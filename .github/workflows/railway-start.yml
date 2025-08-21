@@ -1,8 +1,9 @@
+# .github/workflows/railway-start.yml
 name: Railway Start (11:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 4 * * *"   # 04:00 UTC = 11:00 Барнаул (UTC+7)
+    - cron:  "0 4 * * *"   # 04:00 UTC = 11:00 Барнаул (UTC+7)
   workflow_dispatch: {}
 
 jobs:
@@ -11,20 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check secrets presence
-        run: |
-          echo "RAILWAY_TOKEN set?    -> ${{ secrets.RAILWAY_TOKEN != '' }}"
-          echo "RAILWAY_PROJECT_ID set? -> ${{ secrets.RAILWAY_PROJECT_ID != '' }}"
-          echo "RAILWAY_SERVICE_ID set? -> ${{ secrets.RAILWAY_SERVICE_ID != '' }}"
+      - name: Экспорт токена Railway
+        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Auth check (whoami)
+      - name: Проверка авторизации
         run: npx -y @railway/cli whoami
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-      - name: Link by IDs and start
+      - name: Привязка и запуск сервиса
         run: |
-          npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT_ID }}" --service "${{ secrets.RAILWAY_SERVICE_ID }}" --environment production
+          npx -y @railway/cli link \
+            --project "${{ secrets.RAILWAY_PROJECT }}" \
+            --service "${{ secrets.RAILWAY_SERVICE }}" \
+            --environment "${{ secrets.RAILWAY_ENVIRONMENT || 'production' }}"
           npx -y @railway/cli up --detach
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
