@@ -1,0 +1,20 @@
+name: Railway DIAG
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secrets presence (boolean only)
+        run: |
+          echo "RAILWAY_TOKEN set? -> ${{ secrets.RAILWAY_TOKEN != '' }}"
+          echo "RAILWAY_PROJECT set? -> ${{ secrets.RAILWAY_PROJECT != '' }}"
+          echo "RAILWAY_SERVICE set? -> ${{ secrets.RAILWAY_SERVICE != '' }}"
+
+      - name: Export token to env
+        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Who am I?
+        run: npx -y @railway/cli whoami
