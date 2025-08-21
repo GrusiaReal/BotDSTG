@@ -1,28 +1,30 @@
-name: Railway Stop (03:00 Asia/Barnaul)
+name: Railway Start (11:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 20 * * *"  # 20:00 UTC = 03:00 Барнаул (UTC+7)
+    - cron: "0 4 * * *"   # 04:00 UTC = 11:00 Барнаул (UTC+7)
   workflow_dispatch: {}
 
 jobs:
-  stop:
+  start:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Check secrets presence
         run: |
           echo "RAILWAY_TOKEN set?    -> ${{ secrets.RAILWAY_TOKEN != '' }}"
-          echo "RAILWAY_PROJECT_ID?   -> ${{ secrets.RAILWAY_PROJECT_ID != '' }}"
-          echo "RAILWAY_SERVICE_ID?   -> ${{ secrets.RAILWAY_SERVICE_ID != '' }}"
+          echo "RAILWAY_PROJECT_ID set? -> ${{ secrets.RAILWAY_PROJECT_ID != '' }}"
+          echo "RAILWAY_SERVICE_ID set? -> ${{ secrets.RAILWAY_SERVICE_ID != '' }}"
 
       - name: Auth check (whoami)
         run: npx -y @railway/cli whoami
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-      - name: Link by IDs and stop
+      - name: Link by IDs and start
         run: |
           npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT_ID }}" --service "${{ secrets.RAILWAY_SERVICE_ID }}" --environment production
-          npx -y @railway/cli service stop --service "${{ secrets.RAILWAY_SERVICE_ID }}" || npx -y @railway/cli down || true
+          npx -y @railway/cli up --detach
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
