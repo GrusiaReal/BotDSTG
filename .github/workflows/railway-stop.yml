@@ -9,13 +9,20 @@ jobs:
   stop:
     runs-on: ubuntu-latest
     steps:
-      - name: Export token
-        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
-
-      - name: Auth check
-        run: npx -y @railway/cli whoami
-
-      - name: Link and stop
+      - name: Check secrets presence
         run: |
-          npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT }}" --service "${{ secrets.RAILWAY_SERVICE }}" --environment production
-          npx -y @railway/cli service stop --service "${{ secrets.RAILWAY_SERVICE }}" || npx -y @railway/cli down || true
+          echo "RAILWAY_TOKEN set?    -> ${{ secrets.RAILWAY_TOKEN != '' }}"
+          echo "RAILWAY_PROJECT_ID?   -> ${{ secrets.RAILWAY_PROJECT_ID != '' }}"
+          echo "RAILWAY_SERVICE_ID?   -> ${{ secrets.RAILWAY_SERVICE_ID != '' }}"
+
+      - name: Auth check (whoami)
+        run: npx -y @railway/cli whoami
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Link by IDs and stop
+        run: |
+          npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT_ID }}" --service "${{ secrets.RAILWAY_SERVICE_ID }}" --environment production
+          npx -y @railway/cli service stop --service "${{ secrets.RAILWAY_SERVICE_ID }}" || npx -y @railway/cli down || true
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
