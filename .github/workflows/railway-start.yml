@@ -8,10 +8,15 @@ on:
 jobs:
   start:
     runs-on: ubuntu-latest
-    env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Export token
+        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Auth check
+        run: npx -y @railway/cli whoami
+
       - name: Link and start
         run: |
           npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT }}" --service "${{ secrets.RAILWAY_SERVICE }}" --environment production
