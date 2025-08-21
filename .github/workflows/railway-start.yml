@@ -12,7 +12,7 @@ jobs:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Link project/service and start
+      - name: Link and start
         run: |
           npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT }}" --service "${{ secrets.RAILWAY_SERVICE }}" --environment production
           npx -y @railway/cli up --detach
