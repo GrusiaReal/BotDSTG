@@ -14,8 +14,8 @@ jobs:
       - name: Check secrets presence
         run: |
           echo "RAILWAY_TOKEN set?    -> ${{ secrets.RAILWAY_TOKEN != '' }}"
-          echo "RAILWAY_PROJECT_ID?   -> ${{ secrets.RAILWAY_PROJECT_ID != '' }}"
-          echo "RAILWAY_SERVICE_ID?   -> ${{ secrets.RAILWAY_SERVICE_ID != '' }}"
+          echo "RAILWAY_PROJECT_ID set? -> ${{ secrets.RAILWAY_PROJECT_ID != '' }}"
+          echo "RAILWAY_SERVICE_ID set? -> ${{ secrets.RAILWAY_SERVICE_ID != '' }}"
 
       - name: Auth check (whoami)
         run: npx -y @railway/cli whoami
