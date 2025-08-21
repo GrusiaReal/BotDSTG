@@ -1,20 +1,18 @@
-﻿name: Railway Stop (03:00 Asia/Barnaul)
+name: Railway Stop (03:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 20 * * *"  # 20:00 UTC = 03:00 Барнаул
+    - cron: "0 20 * * *"  # 20:00 UTC = 03:00 Барнаул (UTC+7)
   workflow_dispatch: {}
 
 jobs:
   stop:
     runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
-      - name: Install Railway CLI
-        run: npm i -g @railway/cli
-      - name: Login to Railway
-        run: railway login --token "${{ secrets.RAILWAY_TOKEN }}"
-      - name: Link by names (project/service)
-        run: railway link --project "${{ secrets.RAILWAY_PROJECT }}" --service "${{ secrets.RAILWAY_SERVICE }}"
-      - name: Stop/Pause service
+      - name: Link project/service and stop
         run: |
-          railway service stop --service "${{ secrets.RAILWAY_SERVICE }}" || railway down || true
+          npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT }}" --service "${{ secrets.RAILWAY_SERVICE }}" --environment production
+          # В разных версиях CLI может не быть `service stop` — fallback на `down`
+          npx -y @railway/cli service stop --service "${{ secrets.RAILWAY_SERVICE }}" || npx -y @railway/cli down || true
