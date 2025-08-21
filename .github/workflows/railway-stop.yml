@@ -2,15 +2,19 @@ name: Railway Stop (03:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 20 * * *"  # 20:00 UTC = 03:00 Барнаул
+    - cron: "0 20 * * *"  # 20:00 UTC = 03:00 Барнаул (UTC+7)
   workflow_dispatch: {}
 
 jobs:
   stop:
     runs-on: ubuntu-latest
-    env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     steps:
+      - name: Export token
+        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Auth check
+        run: npx -y @railway/cli whoami
+
       - name: Link and stop
         run: |
           npx -y @railway/cli link --project "${{ secrets.RAILWAY_PROJECT }}" --service "${{ secrets.RAILWAY_SERVICE }}" --environment production
