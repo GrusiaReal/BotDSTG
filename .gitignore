@@ -1,4 +1,15 @@
+# Игнорировать локальные секреты
 .env
-*.env
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# IDE/редакторы
+.vscode/
+.idea/
+
+# Логи
+*.log
