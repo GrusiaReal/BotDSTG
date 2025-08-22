@@ -2,7 +2,7 @@ name: Railway Stop (23:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 16 * * *"  # 16:00 UTC = 23:00 в Asia/Barnaul (UTC+7)
+    - cron: "0 16 * * *"  # 16:00 UTC = 23:00 Барнаул (UTC+7)
   workflow_dispatch: {}
 
 jobs:
@@ -11,16 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Жёстко: удалить последний деплой (как «стоп»)
-      - name: Remove latest deployment
+      - name: Remove latest deployment (stop)
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}  # Project Token от нужного Environment
-        run: npx -y @railway/cli@latest down -y
-
-      # Мягкая альтернатива (если хочешь останавливать через флаг окружения):
-      # - name: Disable app via env flag
-      #   env:
-      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      #   run: |
-      #     npx -y @railway/cli@latest variables --set APP_ENABLED=false
-      #     npx -y @railway/cli@latest redeploy -y
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          npx -y @railway/cli@latest down \
+            --service "${{ secrets.RAILWAY_SERVICE_ID }}" \
+            -y
