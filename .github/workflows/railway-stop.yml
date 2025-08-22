@@ -17,9 +17,7 @@ jobs:
           echo "RAILWAY_PROJECT_ID set? -> ${{ secrets.RAILWAY_PROJECT_ID != '' }}"
           echo "RAILWAY_SERVICE_ID set? -> ${{ secrets.RAILWAY_SERVICE_ID != '' }}"
 
-      - name: Auth check (whoami)
-        run: npx -y @railway/cli whoami
-        env:
+
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Link by IDs and start
