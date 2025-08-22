@@ -1,9 +1,8 @@
-# .github/workflows/railway-start.yml
 name: Railway Start (11:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron:  "0 4 * * *"   # 04:00 UTC = 11:00 Барнаул (UTC+7)
+    - cron: "0 4 * * *"   # 04:00 UTC = 11:00 Барнаул (UTC+7)
   workflow_dispatch: {}
 
 jobs:
@@ -12,15 +11,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Экспорт токена Railway
-        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
-
-
-
-      - name: Привязка и запуск сервиса
+      - name: Link by IDs (project/service/env)
         run: |
-          npx -y @railway/cli link \
-            --project "${{ secrets.RAILWAY_PROJECT }}" \
-            --service "${{ secrets.RAILWAY_SERVICE }}" \
-            --environment "${{ secrets.RAILWAY_ENVIRONMENT || 'production' }}"
-          npx -y @railway/cli up --detach
+          npx -y @railway/cli@latest link \
+            --project "${{ secrets.RAILWAY_PROJECT_ID }}" \
+            --service "${{ secrets.RAILWAY_SERVICE_ID }}" \
+            --environment "production"
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      # Если нужно именно "поднять/перезапустить" без загрузки репозитория,
+      # лучше триггернуть пере-деплой последней версии:
+      - name: Redeploy latest (restart service)
+        run: npx -y @railway/cli@latest redeploy --service "${{ secrets.RAILWAY_SERVICE_ID }}" -y
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      # Если нужно именно загрузить содержимое репозитория, используй 'up' вместо redeploy:
+      # - name: Deploy repo
+      #   run: npx -y @railway/cli@latest up --ci --detach
+      #   env:
+      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
