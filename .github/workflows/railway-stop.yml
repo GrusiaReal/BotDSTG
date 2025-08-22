@@ -11,13 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Sanity: check secrets
+      - name: "Sanity - check secrets"
         run: |
           if [ -z "${{ secrets.RAILWAY_TOKEN }}" ]; then echo "RAILWAY_TOKEN is empty"; exit 1; fi
           if [ -z "${{ secrets.RAILWAY_SERVICE_ID }}" ]; then echo "RAILWAY_SERVICE_ID is empty"; exit 1; fi
 
-      - name: Remove latest deployment (stop)
+      - name: "Remove latest deployment (stop)"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          npx -y @railway/cli@latest down --service "${{ secrets.RAILWAY_SERVICE_ID }}" -y
+        run: npx -y @railway/cli@latest down --service "${{ secrets.RAILWAY_SERVICE_ID }}" -y
