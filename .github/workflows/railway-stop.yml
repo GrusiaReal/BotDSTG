@@ -2,21 +2,31 @@ name: Railway Stop (03:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: '0 20 * * *' # 20:00 UTC = 03:00 Asia/Barnaul (следующего дня)
+    - cron: '0 20 * * *' # 20:00 UTC = 03:00 Asia/Barnaul
   workflow_dispatch:
 
 jobs:
   stop:
     runs-on: ubuntu-latest
+    # ВАЖНО: если секреты лежат в Environment репозитория (напр. production),
+    # обязательно укажи это имя здесь:
+    # environment: production
     steps:
       - uses: actions/checkout@v4
 
-      - name: "Sanity - check secrets"
-        run: |
-          if [ -z "${{ secrets.RAILWAY_TOKEN }}" ]; then echo "RAILWAY_TOKEN is empty"; exit 1; fi
-          if [ -z "${{ secrets.RAILWAY_SERVICE_ID }}" ]; then echo "RAILWAY_SERVICE_ID is empty"; exit 1; fi
-
-      - name: "Remove latest deployment (stop)"
+      - name: Sanity - secrets presence & length
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: npx -y @railway/cli@latest down --service "${{ secrets.RAILWAY_SERVICE_ID }}" -y
+          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+        run: |
+          test -n "$RAILWAY_TOKEN" || (echo "RAILWAY_TOKEN is EMPTY"; exit 1)
+          test -n "$RAILWAY_SERVICE_ID" || (echo "RAILWAY_SERVICE_ID is EMPTY"; exit 1)
+          echo "::add-mask::$RAILWAY_TOKEN"
+          echo "RAILWAY_TOKEN length: ${#RAILWAY_TOKEN}"
+          echo "RAILWAY_SERVICE_ID: $RAILWAY_SERVICE_ID"
+
+      - name: Stop (down)
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          npx -y @railway/cli@latest down --service "${{ secrets.RAILWAY_SERVICE_ID }}" -y
