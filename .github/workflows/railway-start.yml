@@ -2,7 +2,7 @@ name: Railway Start (11:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 4 * * *"   # 04:00 UTC = 11:00 Барнаул (UTC+7)
+    - cron: "0 4 * * *"   # 04:00 UTC = 11:00 в Asia/Barnaul (UTC+7)
   workflow_dispatch: {}
 
 jobs:
@@ -11,7 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Redeploy latest (restart service)
+      # Быстрый перезапуск последнего деплоя в выбранном Environment
+      - name: Redeploy latest
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}  # Project Token от нужного Environment
         run: npx -y @railway/cli@latest redeploy -y
+
+      # Если нужно задеплоить текущий код из репо вместо рестарта, поменяй шаг выше на этот:
+      # - name: Deploy repo (up)
+      #   env:
+      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      #   run: npx -y @railway/cli@latest up --ci --detach
