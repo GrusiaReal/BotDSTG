@@ -2,7 +2,7 @@ name: Railway Stop (23:00 Asia/Barnaul)
 
 on:
   schedule:
-   - cron: "0 20 * * *"   # 20:00 UTC = 03:00 Asia/Barnaul
+    - cron: "0 20 * * *"   # 20:00 UTC = 03:00 Asia/Barnaul (UTC+7, следующего дня)
   workflow_dispatch: {}
 
 jobs:
