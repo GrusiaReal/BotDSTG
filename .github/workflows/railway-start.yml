@@ -13,21 +13,5 @@ jobs:
 
       - name: Redeploy latest (restart service)
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}          # Project Token
-        run: |
-          npx -y @railway/cli@latest redeploy \
-            --project "${{ secrets.RAILWAY_PROJECT_ID }}" \
-            --service "${{ secrets.RAILWAY_SERVICE_ID }}" \
-            --environment "production" \
-            -y
-
-      # Если хочешь именно задеплоить код из репозитория (вместо redeploy):
-      # - name: Deploy repo (up)
-      #   env:
-      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      #   run: |
-      #     npx -y @railway/cli@latest up \
-      #       --project "${{ secrets.RAILWAY_PROJECT_ID }}" \
-      #       --service "${{ secrets.RAILWAY_SERVICE_ID }}" \
-      #       --environment "production" \
-      #       --ci --detach
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: npx -y @railway/cli@latest redeploy -y
