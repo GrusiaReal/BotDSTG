@@ -1,17 +1,17 @@
-name: Railway Start (11:00 Asia/Barnaul)
+name: Railway Stop via Env Flag (23:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 4 * * *"   # 04:00 UTC = 11:00 Барнаул (UTC+7)
+    - cron: "0 16 * * *"   # 16:00 UTC = 23:00 Барнаул (UTC+7)
   workflow_dispatch: {}
 
 jobs:
-  start:
+  stop:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Link by IDs (project/service/env)
+      - name: Link by IDs
         run: |
           npx -y @railway/cli@latest link \
             --project "${{ secrets.RAILWAY_PROJECT_ID }}" \
@@ -20,15 +20,16 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-      # Если нужно именно "поднять/перезапустить" без загрузки репозитория,
-      # лучше триггернуть пере-деплой последней версии:
-      - name: Redeploy latest (restart service)
-        run: npx -y @railway/cli@latest redeploy --service "${{ secrets.RAILWAY_SERVICE_ID }}" -y
+      - name: Disable app via env var
+        run: |
+          npx -y @railway/cli@latest variables \
+            --service "${{ secrets.RAILWAY_SERVICE_ID }}" \
+            --environment "production" \
+            --set "APP_ENABLED=false"
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-      # Если нужно именно загрузить содержимое репозитория, используй 'up' вместо redeploy:
-      # - name: Deploy repo
-      #   run: npx -y @railway/cli@latest up --ci --detach
-      #   env:
-      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Redeploy to apply flag
+        run: npx -y @railway/cli@latest redeploy --service "${{ secrets.RAILWAY_SERVICE_ID }}" -y
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
