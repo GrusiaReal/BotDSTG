@@ -3,6 +3,3 @@ discord.py
 requests
 python-dotenv
 
-discord.py
-requests
-
