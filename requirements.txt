@@ -1,8 +1,8 @@
-<<<<<<< HEAD
+
 discord.py
 requests
 python-dotenv
-=======
+
 discord.py
 requests
->>>>>>> 116fc41 (Initial clean commit (no secrets))
+
