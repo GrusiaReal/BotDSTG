@@ -1,20 +1,23 @@
-name: Railway Stop (23:00 Asia/Barnaul)
+name: Railway Stop (03:00 Asia/Barnaul)
 
 on:
   schedule:
-    - cron: "0 20 * * *"   # 20:00 UTC = 03:00 Asia/Barnaul (UTC+7, следующего дня)
+    - cron: "0 20 * * *"  # 20:00 UTC = 03:00 Asia/Barnaul (UTC+7, next day)
   workflow_dispatch: {}
 
 jobs:
   stop:
     runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}     # <-- Project Token
+      R_SERVICE: ${{ secrets.RAILWAY_SERVICE_ID }}    # <-- имя или ID сервиса
     steps:
       - uses: actions/checkout@v4
 
-      - name: Remove latest deployment (stop)
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Sanity: check secrets
         run: |
-          npx -y @railway/cli@latest down \
-            --service "${{ secrets.RAILWAY_SERVICE_ID }}" \
-            -y
+          test -n "$RAILWAY_TOKEN" || (echo "RAILWAY_TOKEN is empty"; exit 1)
+          test -n "$R_SERVICE" || (echo "RAILWAY_SERVICE_ID is empty"; exit 1)
+
+      - name: Remove latest deployment (stop)
+        run: npx -y @railway/cli@latest down --service "$R_SERVICE" -y
